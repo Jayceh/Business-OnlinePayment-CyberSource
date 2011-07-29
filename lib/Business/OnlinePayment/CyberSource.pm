@@ -71,12 +71,21 @@ has _card_types => ( # used for?
 	},
 );
 
-my %actions = (
-	'normal authorization' => [ 'ccAuthService_run', 'ccCaptureService_run' ],
-	'authorization only'   => ['ccAuthService_run'],
-	'credit'               => ['ccCreditService_run'],
-	'post authorization'   => ['ccCaptureService_run'],
-	'void authorization' => ['ccAuthReversalService_run'],
+has _actions => ( # used for?
+	is       => 'ro',
+	isa      => 'HashRef[ArrayRef]',
+	traits   => ['Hash'],
+	required => 1,
+	lazy     => 1,
+	default  => sub {
+		return {
+			'normal authorization' => [ 'ccAuthService_run', 'ccCaptureService_run' ],
+			'authorization only'   => ['ccAuthService_run'],
+			'credit'               => ['ccCreditService_run'],
+			'post authorization'   => ['ccCaptureService_run'],
+			'void authorization' => ['ccAuthReversalService_run'],
+		};
+	},
 );
 
 # Requires Request Token List
@@ -167,7 +176,7 @@ sub submit {    ## no critic ( Subroutines::ProhibitExcessComplexity )
 	}
 
 	# Set them correctly
-	foreach my $action ( @{ $actions{ lc( $content->{'action'} ) } } ) {
+	foreach my $action ( @{ $self->_actions->{ lc( $content->{'action'} ) } } ) {
 		$content->{$action} = 'true';
 	}
 
