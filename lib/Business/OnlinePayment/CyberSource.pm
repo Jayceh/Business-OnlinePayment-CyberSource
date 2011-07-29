@@ -41,7 +41,7 @@ my @action_list = (
 	'afsService_run'
 );
 
-has card_types => ( # used for?
+has _card_types => ( # used for?
 	is       => 'ro',
 	isa      => 'HashRef[Str]',
 	traits   => ['Hash'],
@@ -249,7 +249,7 @@ sub submit {    ## no critic ( Subroutines::ProhibitExcessComplexity )
 		$content->{'ssn'} =~ s/-//gxms;
 	}
 
-	$content->{'card_cardType'} = $self->card_types->{ lc( $self->transaction_type ) };
+	$content->{'card_cardType'} = $self->_card_types->{ lc( $self->transaction_type ) };
 
 	# Check and convert the data for an Authorization
 	if ( lc( $content->{'ccAuthService_run'} ) eq 'true' ) {
