@@ -14,23 +14,16 @@ use MooseX::NonMoose;
 use Business::OnlinePayment::CyberSource::Error;
 extends 'Business::OnlinePayment';
 
-{
+BEGIN {
 	use English qw( -no_match_vars );
 	use Module::Load::Conditional qw( can_load requires );
 
-	my $backend = 'CyberSource::SOAPI'; # replace me
-
-	if ( can_load( modules => { $backend => undef } ) ) {
-		given ( $backend ) {
-			when ( /CyberSource::SOAPI/xms ) {
-				with 'Business::OnlinePayment::CyberSource::Role::SOAPI';
-			}
-			when ( /Checkout::CyberSource::SOAP/xms ) {
-				with 'Business::OnlinePayment::CyberSource::Role::SOAP';
-			}
-		}
-	} else {
-		croak 'can not load backend ' . $backend;
+	if ( can_load( modules => 'CyberSource::SOAPI' ) ) {
+		with 'Business::OnlinePayment::CyberSource::Role::SOAPI';
+	}
+	elsif ( can_load( modules => 'Checkout::CyberSource::SOAP' ) ) {
+		carp 'loading Checkout';
+#		with 'Business::OnlinePayment::CyberSource::Role::SOAP';
 	}
 }
 

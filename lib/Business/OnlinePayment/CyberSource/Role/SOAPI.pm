@@ -1,13 +1,20 @@
 package Business::OnlinePayment::CyberSource::Role::SOAPI;
+use 5.010;
 use strict;
 use warnings;
 use Carp;
-use Moose::Role;
-use namespace::autoclean;
 BEGIN {
 	# VERSION
+
+	use Module::Load::Conditional qw( can_load requires );
+
+	if ( can_load( modules => { 'CyberSource::SOAPI' => undef } ) ) {
+		eval { requires 'CyberSource::SOAPI' };
+	}
+	no Module::Load::Conditional;
 }
-use CyberSource::SOAPI;
+use Moose::Role;
+use namespace::autoclean;
 
 has config => (
 	is       => 'rw',
