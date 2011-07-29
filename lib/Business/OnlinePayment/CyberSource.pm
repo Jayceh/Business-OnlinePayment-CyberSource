@@ -109,7 +109,7 @@ sub get_fields {
 }
 
 sub submit {    ## no critic ( Subroutines::ProhibitExcessComplexity )
-	my ($self) = @_;
+	my $self = shift;
 
 	$self->{config} = $self->config;
 
