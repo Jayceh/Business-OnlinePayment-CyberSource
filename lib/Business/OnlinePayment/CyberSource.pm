@@ -17,10 +17,10 @@ extends 'Business::OnlinePayment';
 BEGIN {
 	use Module::Load::Conditional qw( can_load requires );
 
-	if ( can_load( modules => 'CyberSource::SOAPI' ) ) {
+	if    ( can_load( modules => { 'CyberSource::SOAPI'          => undef } ) ) {
 		with 'Business::OnlinePayment::CyberSource::Role::SOAPI';
 	}
-	elsif ( can_load( modules => 'Checkout::CyberSource::SOAP' ) ) {
+	elsif ( can_load( modules => { 'Checkout::CyberSource::SOAP' => undef } ) ) {
 		carp 'loading Checkout';
 #		with 'Business::OnlinePayment::CyberSource::Role::SOAP';
 	}
