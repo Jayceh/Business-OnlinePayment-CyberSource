@@ -129,7 +129,7 @@ sub get_fields {
 }
 
 sub _set_item_list
-{ ## no critic ( Subroutines::RequireFinalReturn Subroutines::ProhibitExcessComplexity )
+{ ## no critic ( Subroutines::RequireFinalReturn Subroutines::ProhibitExcessComplexity Subroutines::ProhibitUnusedPrivateSubroutines )
 
 	# Big time side effects - The items are going to be loaded into the hash
 	my ( $self, $content, $request ) = @_;
