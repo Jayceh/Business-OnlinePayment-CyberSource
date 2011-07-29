@@ -15,7 +15,6 @@ use Business::OnlinePayment::CyberSource::Error;
 extends 'Business::OnlinePayment';
 
 BEGIN {
-	use English qw( -no_match_vars );
 	use Module::Load::Conditional qw( can_load requires );
 
 	if ( can_load( modules => 'CyberSource::SOAPI' ) ) {
