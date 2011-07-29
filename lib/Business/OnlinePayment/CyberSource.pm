@@ -80,10 +80,19 @@ my %actions = (
 );
 
 # Requires Request Token List
-my %request_token = (
-	ccCaptureService_run      => 'ccCaptureService_authRequestToken',
-	ccCreditService_run       => 'ccCreditService_captureRequestToken',
-	ccAuthReversalService_run => 'ccAuthReversalService_authRequestToken',
+has _request_token => (
+	is       => 'ro',
+	isa      => 'HashRef[Str]',
+	traits   => ['Hash'],
+	required => 1,
+	lazy     => 1,
+	default  => sub {
+		return {
+			ccCaptureService_run      => 'ccCaptureService_authRequestToken',
+			ccCreditService_run       => 'ccCreditService_captureRequestToken',
+			ccAuthReversalService_run => 'ccAuthReversalService_authRequestToken',
+		};
+	},
 );
 
 sub set_defaults {
@@ -282,7 +291,7 @@ sub submit {    ## no critic ( Subroutines::ProhibitExcessComplexity )
 			$request->{'ccCaptureService_authRequestID'} =
 				$content->{'request_id'};
 			$self->required_fields(qw(security_key));
-			$request->{ $request_token{'ccCaptureService_run'} } =
+			$request->{ $self->_request_token->{ccCaptureService_run} } =
 				$content->{'security_key'};
 			if ( defined( $content->{'auth_code'} ) ) {
 				$request->{'ccCaptureService_authverbalAuthCode'} =
@@ -300,7 +309,7 @@ sub submit {    ## no critic ( Subroutines::ProhibitExcessComplexity )
 			$request->{'ccCreditService_captureRequestID'} =
 				$content->{'request_id'};
 			$self->required_fields(qw(security_key));
-			$request->{ $request_token{'ccCreditService_run'} } =
+			$request->{ $self->_request_token->{ccCreditService_run} } =
 				$content->{'security_key'};
 		}
 		else {
