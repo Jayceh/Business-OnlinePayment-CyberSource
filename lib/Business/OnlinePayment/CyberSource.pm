@@ -21,7 +21,6 @@ BEGIN {
 		with 'Business::OnlinePayment::CyberSource::Role::SOAPI';
 	}
 	elsif ( can_load( modules => { 'Checkout::CyberSource::SOAP' => undef } ) ) {
-		carp 'loading Checkout';
 #		with 'Business::OnlinePayment::CyberSource::Role::SOAP';
 	}
 }
