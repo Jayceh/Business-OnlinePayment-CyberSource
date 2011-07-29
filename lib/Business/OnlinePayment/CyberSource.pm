@@ -34,11 +34,21 @@ extends 'Business::OnlinePayment';
 	}
 }
 
-# ACTION MAP
-my @action_list = (
-	'ccAuthService_run',    'ccAuthReversalService_run',
-	'ccCaptureService_run', 'ccCreditService_run',
-	'afsService_run'
+has _action_list => (
+	is       => 'ro',
+	isa      => 'ArrayRef[Str]',
+	traits   => ['Array'],
+	required => 1,
+	lazy     => 1,
+	default  => sub {
+		return [ qw(
+			ccAuthService_run
+			ccAuthReversalService_run
+			ccCaptureService_run
+			ccCreditService_run
+			afsService_run
+		)];
+	},
 );
 
 has _card_types => ( # used for?
@@ -143,7 +153,7 @@ sub submit {    ## no critic ( Subroutines::ProhibitExcessComplexity )
 
 	### Handle The Actions
 	# Reset them all
-	foreach my $action (@action_list) {
+	foreach my $action ( @{ $self->_action_list } ) {
 		$content->{$action} = 'false';
 	}
 
@@ -160,7 +170,7 @@ sub submit {    ## no critic ( Subroutines::ProhibitExcessComplexity )
 	}
 
 	my %request_base = $self->get_fields(
-		@action_list, qw( afsService_run
+		@{ $self->_action_list } , qw( afsService_run
 			merchantID merchantReferenceCode
 			clientApplication clientApplicationVersion clientApplicationUser
 			)
