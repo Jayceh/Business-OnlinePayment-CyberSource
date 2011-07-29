@@ -41,24 +41,32 @@ my @action_list = (
 	'afsService_run'
 );
 
+has card_types => ( # used for?
+	is       => 'ro',
+	isa      => 'HashRef[Str]',
+	traits   => ['Hash'],
+	required => 1,
+	lazy     => 1,
+	default  => sub {
+		return {
+			'visa'             => '001',
+			'mastercard'       => '002',
+			'american express' => '003',
+			'discover'         => '004',
+			'diners club'      => '005',
+			'carte blanche'    => '006',
+			'jcb'              => '007',
+			'optima'           => '008',
+		}
+	},
+);
+
 my %actions = (
 	'normal authorization' => [ 'ccAuthService_run', 'ccCaptureService_run' ],
 	'authorization only'   => ['ccAuthService_run'],
 	'credit'               => ['ccCreditService_run'],
 	'post authorization'   => ['ccCaptureService_run'],
 	'void authorization' => ['ccAuthReversalService_run'],
-);
-
-# CARD TYPE MAP
-my %card_types = (
-	'visa'             => '001',
-	'mastercard'       => '002',
-	'american express' => '003',
-	'discover'         => '004',
-	'diners club'      => '005',
-	'carte blanche'    => '006',
-	'jcb'              => '007',
-	'optima'           => '008',
 );
 
 # Requires Request Token List
@@ -241,7 +249,7 @@ sub submit {    ## no critic ( Subroutines::ProhibitExcessComplexity )
 		$content->{'ssn'} =~ s/-//gxms;
 	}
 
-	$content->{'card_cardType'} = $card_types{ lc( $self->transaction_type ) };
+	$content->{'card_cardType'} = $self->card_types->{ lc( $self->transaction_type ) };
 
 	# Check and convert the data for an Authorization
 	if ( lc( $content->{'ccAuthService_run'} ) eq 'true' ) {
