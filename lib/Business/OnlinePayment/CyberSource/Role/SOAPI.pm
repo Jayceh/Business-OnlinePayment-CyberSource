@@ -9,7 +9,7 @@ BEGIN {
 	use Module::Load::Conditional qw( can_load requires );
 
 	if ( can_load( modules => { 'CyberSource::SOAPI' => undef } ) ) {
-		eval { requires 'CyberSource::SOAPI' };
+		requires 'CyberSource::SOAPI';
 	}
 	no Module::Load::Conditional;
 }
