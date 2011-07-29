@@ -385,3 +385,15 @@ sub submit {    ## no critic ( Subroutines::ProhibitExcessComplexity )
 1;
 
 # ABSTRACT: Role that abstracts CyberSource::SOAPI
+
+=head1 METHODS
+
+=over 4
+
+=item C<submit>
+
+see L<Business::OnlinePayment>
+
+=back
+
+=cut
