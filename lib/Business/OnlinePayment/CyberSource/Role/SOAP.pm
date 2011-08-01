@@ -34,7 +34,7 @@ sub submit {
 	my $checkout = Checkout::CyberSource::SOAP->new(
 		id         => $content->{login},
 		key        => $content->{password},
-		production => $content->{production} //= 0,
+		production => $self->test_transaction //= 0,
 		column_map => {
 			firstName       => $content->{first_name},
 			lastName        => $content->{last_name},
