@@ -74,8 +74,6 @@ sub submit {
 		column_map => $column_map,
     );
 
-	warn Dumper $checkout;
-
 	$checkout->checkout( $data );
 
 	if ( $checkout->response->success ) {
