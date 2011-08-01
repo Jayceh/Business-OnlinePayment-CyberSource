@@ -25,8 +25,6 @@ my $tx
 		config => {
 			merchantID       => $CYBS_ID,
 			keysDirectory    => $CYBS_KEY_DIR,
-			targetAPIVersion => '1.60',
-			sendToProduction => 'false',
 		},
 	);
 
