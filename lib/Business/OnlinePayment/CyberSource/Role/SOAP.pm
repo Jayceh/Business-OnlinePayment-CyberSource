@@ -81,3 +81,15 @@ sub submit {
 1;
 
 # ABSTRACT: Checkout::CyberSource::SOAP backend for Business::OnlinePayment::Cybersource
+
+=head1 METHODS
+
+=over 4
+
+=item * C<submit>
+
+See L<Business::OnlinePayment> for more information on this method
+
+=back
+
+=cut
