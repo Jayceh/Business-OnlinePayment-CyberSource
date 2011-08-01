@@ -16,13 +16,6 @@ BEGIN {
 use Moose::Role;
 use namespace::autoclean;
 
-has config => (
-	is       => 'rw',
-	isa      => 'HashRef[Str]',
-	traits   => ['Hash'],
-	required => 1,
-);
-
 sub submit {
 	my $self = shift;
 
