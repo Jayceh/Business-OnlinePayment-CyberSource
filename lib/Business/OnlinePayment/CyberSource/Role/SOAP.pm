@@ -36,7 +36,7 @@ sub submit {
 	my $content = { $self->content };
 
 	my $month = substr( $content->{expiration}, 0, 2 );
-	my $year  = substr( $content->{expiration}, 2, 4 );
+	my $year  = substr( $content->{expiration}, 2, 2 );
 
 	my $data = {
 		'expiry.month'  => $month,
