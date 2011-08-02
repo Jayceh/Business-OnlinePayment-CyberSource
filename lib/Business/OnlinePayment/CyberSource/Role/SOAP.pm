@@ -75,13 +75,13 @@ sub submit {
 		expirationYear  => "expiry.year",
 	};
 
-	my $production = $self->test_transaction ? 1 : 0;
+	my $production = $self->test_transaction ? 0 : 1;
 
 	my $checkout = Checkout::CyberSource::SOAP->new(
 		id         => $content->{login},
 		key        => $content->{password},
 		column_map => $column_map,
-		production => $production,
+		production => "$production",
     );
 
 	$checkout->checkout( $data );
