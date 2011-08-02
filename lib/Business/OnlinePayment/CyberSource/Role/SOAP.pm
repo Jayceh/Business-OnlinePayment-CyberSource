@@ -90,6 +90,8 @@ sub submit {
 			&& $checkout->response->success->{message} eq 'Successful transaction'
 		) {
 		$self->is_success(1);
+
+		$self->order_number( $checkout->response->payment_info->{refcode} );
 	}
 	else {
 		$self->error_message( $checkout->response->{error}->{message} );
