@@ -46,4 +46,7 @@ $tx->submit();
 ok( $tx->is_success, 'transaction successful' )
 	or diag $tx->error_message;
 
+note( $tx->order_number );
+
+ok ( $tx->order_number, 'order_number exists' );
 done_testing;
