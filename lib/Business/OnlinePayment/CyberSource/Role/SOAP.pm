@@ -19,6 +19,17 @@ BEGIN {
 use Moose::Role;
 use namespace::autoclean;
 
+before submit => sub {
+	my $self = shift;
+
+	my $content = { $self->content };
+
+	my $_;
+	$content->{$_} // croak "$_ not defined"
+		for qw( expiration address amount card_number city country email
+			first_name customer_ip last_name state zip );
+};
+
 sub submit {
 	my $self = shift;
 
