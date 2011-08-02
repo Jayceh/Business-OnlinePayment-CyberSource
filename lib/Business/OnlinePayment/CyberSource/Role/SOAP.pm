@@ -3,6 +3,9 @@ use 5.010;
 use strict;
 use warnings;
 use Carp;
+our @CARP_NOT = qw( Business::OnlinePayment Class::MOP::Method::Wrapped );
+@Business::OnlinePayment::CARP_NOT = __PACKAGE__;
+
 BEGIN {
 	# VERSION
 
