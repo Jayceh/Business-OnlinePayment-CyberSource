@@ -39,21 +39,21 @@ sub submit {
 	my $year  = substr( $content->{expiration}, 2, 4 );
 
 	my $data = {
-		firstname       => $content->{first_name},
-		lastname        => $content->{last_name},
+		'expiry.month'  => $month,
+		'expiry.year'   => $year,
 		address1        => $content->{address},
+		amount          => $content->{amount},
+		cardnumber      => $content->{card_number},
 		city            => $content->{city},
+		country         => $content->{country},
+		currency        => 'USD',
+		email           => $content->{email},
+		firstname       => $content->{first_name},
+		ip              => $content->{customer_ip},
+		lastname        => $content->{last_name},
+		quantity        => '1',
 		state           => $content->{state},
 		zip             => $content->{zip},
-		country         => $content->{country},
-		email           => $content->{email},
-		ip              => $content->{customer_ip},
-		amount          => $content->{amount},
-		quantity        => 1,
-		currency        => 'USD',
-		cardnumber      => $content->{card_number},
-		exp_month       => $month,
-		exp_year        => $year,
 	};
 
 	# I don't really understand the need for colum maps but w/e
@@ -71,8 +71,8 @@ sub submit {
 		quantity        => "quantity",
 		currency        => "currency",
 		accountNumber   => "cardnumber",
-		expirationMonth => "exp_month",
-		expirationYear  => "exp_year",
+		expirationMonth => "expiry.month",
+		expirationYear  => "expiry.year",
 	};
 
 	my $production = $self->test_transaction ? 1 : 0;
