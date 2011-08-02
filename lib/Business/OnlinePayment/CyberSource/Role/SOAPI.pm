@@ -384,7 +384,7 @@ sub submit {    ## no critic ( Subroutines::ProhibitExcessComplexity )
 }
 1;
 
-# ABSTRACT: Role that abstracts CyberSource::SOAPI
+# ABSTRACT: Role that abstracts CyberSource Simple Order API
 
 =head1 METHODS
 
