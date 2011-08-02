@@ -15,14 +15,39 @@ use Business::OnlinePayment::CyberSource::Error;
 extends 'Business::OnlinePayment';
 
 BEGIN {
+	# determine which backend to use
+
+	use Env qw( CYBERSOURCE_BACKEND );
+	our $BACKEND = $CYBERSOURCE_BACKEND ? $CYBERSOURCE_BACKEND : 'SOAP';
+
 	use Module::Load::Conditional qw( can_load requires );
 
-	if    ( can_load( modules => { 'CyberSource::SOAPI'          => undef } ) ) {
-		with 'Business::OnlinePayment::CyberSource::Role::SOAPI';
+	my $_;
+	given ( $BACKEND ) {
+		when ( /SOAPI/
+				&& can_load(
+					modules => { 'CyberSource::SOAPI'          => undef },
+				)
+			) {
+			with 'Business::OnlinePayment::CyberSource::Role::SOAPI';
+		}
+		when ( /SOAP/
+				&& can_load(
+					modules => { 'Checkout::CyberSource::SOAP' => undef },
+				)
+			) {
+			with 'Business::OnlinePayment::CyberSource::Role::SOAP';
+		}
+		when ( $_ ne 'SOAP' and $_ ne 'SOAPI' ) {
+			croak 'BACKEND is not set to SOAPI or SOAP';
+		}
+		default {
+			croak 'Unable to load CyberSource::SOAPI or '
+				. 'Checkout::CyberSource::SOAP';
+		}
 	}
-	elsif ( can_load( modules => { 'Checkout::CyberSource::SOAP' => undef } ) ) {
-		with 'Business::OnlinePayment::CyberSource::Role::SOAP';
-	}
+	no Env;
+	no Module::Load::Conditional;
 }
 
 has _action_list => (
