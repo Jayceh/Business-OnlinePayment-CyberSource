@@ -86,11 +86,13 @@ sub submit {
 
 	$checkout->checkout( $data );
 
-	if ( $checkout->response->success ) {
+	if ( $checkout->response->success->{message}
+			&& $checkout->response->success->{message} eq 'Successful transaction'
+		) {
 		$self->is_success(1);
 	}
 	else {
-		$self->error_message( $checkout->response->{error} );
+		$self->error_message( $checkout->response->{error}->{message} );
 	}
 	return 1;
 }
