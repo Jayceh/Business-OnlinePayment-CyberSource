@@ -14,6 +14,7 @@ BEGIN {
 plan skip_all => 'You MUST set ENV variable CYBS_CONF to test this!'
 		unless -e $CYBS_CONF;
 
+$Business::OnlinePayment::CyberSource::BACKEND = 'SOAPI';
 use Business::OnlinePayment;
 
 my $tx
@@ -42,6 +43,9 @@ $tx->content(
 $tx->test_transaction(1);    # test, dont really charge
 $tx->submit();
 
+is( $Business::OnlinePayment::CyberSource::BACKEND, 'SOAPI',
+	'use SOAPI backend'
+);
 ok( $tx->is_success, 'transaction successful' )
 	or diag $tx->error_message;
 

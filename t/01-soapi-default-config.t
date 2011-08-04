@@ -10,12 +10,13 @@ use Business::OnlinePayment;
 BEGIN {
     eval 'use CyberSource::SOAPI';
     plan skip_all => 'Skipping without CyberSource::SOAPI' if $@;
+	no CyberSource::SOAPI;
 }
-
 plan skip_all => 'You must have the default configuration file: '
 	.'/etc/cybs.ini configured'
 	unless -e '/etc/cybs.ini';
 
+$Business::OnlinePayment::CyberSource::BACKEND = 'SOAPI';
 
 my $tx = Business::OnlinePayment->new('CyberSource');
 $tx->content(
@@ -37,6 +38,10 @@ $tx->content(
 );
 $tx->test_transaction(1);    # test, dont really charge
 $tx->submit();
+
+is( $Business::OnlinePayment::CyberSource::BACKEND, 'SOAPI',
+	'use SOAPI backend'
+);
 
 ok( $tx->is_success, 'transaction successful' )
 	or diag $tx->error_message;

@@ -17,6 +17,7 @@ plan skip_all => 'You MUST set ENV variable CYBS_ID and CYBS_KEY_DIR to test thi
 plan skip_all => 'CYBS_KEY_DIR: "' . $CYBS_KEY_DIR . '" does not exist'
 	unless -d $CYBS_KEY_DIR;
 
+$Business::OnlinePayment::CyberSource::BACKEND = 'SOAPI';
 use Business::OnlinePayment;
 
 my $tx
@@ -25,6 +26,7 @@ my $tx
 		config => {
 			merchantID       => $CYBS_ID,
 			keysDirectory    => $CYBS_KEY_DIR,
+			targetAPIVersion => '1.60',
 		},
 	);
 
@@ -47,6 +49,10 @@ $tx->content(
 );
 $tx->test_transaction(1);    # test, dont really charge
 $tx->submit();
+
+is( $Business::OnlinePayment::CyberSource::BACKEND, 'SOAPI',
+	'use SOAPI backend'
+);
 
 ok( $tx->is_success, 'transaction successful' )
 	or diag $tx->error_message;
