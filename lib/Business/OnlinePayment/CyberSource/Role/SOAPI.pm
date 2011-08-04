@@ -38,6 +38,76 @@ has config => (
 	},
 );
 
+has _action_list => (
+	is       => 'ro',
+	isa      => 'ArrayRef[Str]',
+	traits   => ['Array'],
+	required => 1,
+	lazy     => 1,
+	default  => sub {
+		return [ qw(
+			ccAuthService_run
+			ccAuthReversalService_run
+			ccCaptureService_run
+			ccCreditService_run
+			afsService_run
+		)];
+	},
+);
+
+has _card_types => ( # used for?
+	is       => 'ro',
+	isa      => 'HashRef[Str]',
+	traits   => ['Hash'],
+	required => 1,
+	lazy     => 1,
+	default  => sub {
+		return {
+			'visa'             => '001',
+			'mastercard'       => '002',
+			'american express' => '003',
+			'discover'         => '004',
+			'diners club'      => '005',
+			'carte blanche'    => '006',
+			'jcb'              => '007',
+			'optima'           => '008',
+		}
+	},
+);
+
+has _actions => ( # used for?
+	is       => 'ro',
+	isa      => 'HashRef[ArrayRef]',
+	traits   => ['Hash'],
+	required => 1,
+	lazy     => 1,
+	default  => sub {
+		return {
+			'normal authorization' => [ 'ccAuthService_run', 'ccCaptureService_run' ],
+			'authorization only'   => ['ccAuthService_run'],
+			'credit'               => ['ccCreditService_run'],
+			'post authorization'   => ['ccCaptureService_run'],
+			'void authorization' => ['ccAuthReversalService_run'],
+		};
+	},
+);
+
+# Requires Request Token List
+has _request_token => (
+	is       => 'ro',
+	isa      => 'HashRef[Str]',
+	traits   => ['Hash'],
+	required => 1,
+	lazy     => 1,
+	default  => sub {
+		return {
+			ccCaptureService_run      => 'ccCaptureService_authRequestToken',
+			ccCreditService_run       => 'ccCreditService_captureRequestToken',
+			ccAuthReversalService_run => 'ccAuthReversalService_authRequestToken',
+		};
+	},
+);
+
 sub submit {    ## no critic ( Subroutines::ProhibitExcessComplexity )
 	my $self = shift;
 
