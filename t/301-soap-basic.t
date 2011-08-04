@@ -15,6 +15,7 @@ BEGIN {
 plan skip_all => 'You MUST set ENV variable CYBS_ID and CYBS_KEY to test this!'
 		unless $CYBS_ID && $CYBS_KEY;
 
+$Business::OnlinePayment::CyberSource::BACKEND = 'SOAP';
 use Business::OnlinePayment;
 
 my $tx = Business::OnlinePayment->new('CyberSource');
@@ -42,6 +43,10 @@ $tx->content(
 $tx->test_transaction(1);    # test, dont really charge
 
 $tx->submit();
+
+is( $Business::OnlinePayment::CyberSource::BACKEND, 'SOAP',
+	'Backend is SOAP'
+);
 
 ok( $tx->is_success, 'transaction successful' )
 	or diag $tx->error_message;
