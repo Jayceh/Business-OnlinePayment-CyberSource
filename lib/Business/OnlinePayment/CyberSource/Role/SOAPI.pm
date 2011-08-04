@@ -108,6 +108,120 @@ has _request_token => (
 	},
 );
 
+sub set_defaults {
+	my $self = shift;
+
+	return $self->build_subs(
+		qw( order_number avs_code  cvv2_response cavv_response
+			auth_reply auth_reversal_reply capture_reply
+			credit_reply afs_reply failure_status security_key request_token
+			)
+	);
+}
+
+sub map_fields {
+	my ( $self, %map ) = @_;
+
+	my %content = $self->content();
+	foreach ( keys %map ) {
+		$content{ $map{$_} } = $content{$_};
+	}
+	return $self->content(%content);
+}
+
+sub get_fields {
+	my ( $self, @fields ) = @_;
+
+	my %content = $self->content();
+	my %new     = ();
+	foreach ( grep { defined $content{$_} } @fields ) {
+		$new{$_} = $content{$_};
+	}
+	return %new;
+}
+
+sub _set_item_list
+{ ## no critic ( Subroutines::RequireFinalReturn Subroutines::ProhibitExcessComplexity Subroutines::ProhibitUnusedPrivateSubroutines )
+
+	# Big time side effects - The items are going to be loaded into the hash
+	my ( $self, $content, $request ) = @_;
+
+	# Here go the items/amounts
+	if ( defined( $content->{'items'} ) && scalar( $content->{'items'} ) > 0 ) {
+		foreach my $item ( @{ $content->{'items'} } ) {
+			if ( defined( $item->{'type'} ) && $item->{'type'} ne '' ) {
+				$request->{ "item_" . $item->{'number'} . "_productCode" } =
+					$item->{'type'};
+			}
+			if ( defined( $item->{'SKU'} ) && $item->{'SKU'} ne '' ) {
+				$request->{ "item_" . $item->{'number'} . "_productSKU" } =
+					$item->{'SKU'};
+			}
+			if ( defined( $item->{'name'} ) && $item->{'name'} ne '' ) {
+				$request->{ "item_" . $item->{'number'} . "_productName" } =
+					$item->{'name'};
+			}
+			if ( defined( $item->{'quantity'} ) && $item->{'quantity'} ne '' ) {
+				$request->{ "item_" . $item->{'number'} . "_quantity" } =
+					$item->{'quantity'};
+			}
+			if ( defined( $item->{'tax'} ) && $item->{'tax'} ne '' ) {
+				$request->{ "item_" . $item->{'number'} . "_taxAmount" } =
+					$item->{'tax'};
+			}
+			if ( defined( $item->{'unit_price'} )
+				&& $item->{'unit_price'} ne '' )
+			{
+				$request->{ "item_" . $item->{'number'} . "_unitPrice" } =
+					$item->{'unit_price'};
+			}
+			else {
+				croak( "Item " . $item->{'number'} . " has no unit_price" );
+			}
+		}
+	}
+	if ( defined( $content->{'amount'} ) && $content->{'amount'} ne '' ) {
+		if ( defined( $content->{'freight'} ) && $content->{'freight'} ne '' ) {
+			$request->{'purchaseTotals_freightAmount'} = $content->{'freight'};
+		}
+		if ( defined( $content->{'tax'} ) && $content->{'tax'} ne '' ) {
+			$request->{'purchaseTotals_taxAmount'} = $content->{'tax'};
+		}
+		$request->{'purchaseTotals_grandTotalAmount'} = $content->{'amount'};
+	}
+	if (
+		(
+			!defined( $content->{'items'} ) || scalar( $content->{'items'} ) < 0
+		)
+		&& ( !defined( $content->{'amount'} ) || $content->{'amount'} eq '' )
+		)
+	{
+		croak("It's impossible to auth without items or amount populated!");
+	}
+
+	if ( $content->{'recurring_billing'} ) {
+		$request->{'ccAuthService_commerceIndicator'} = 'recurring';
+	}
+	else {
+		$request->{'ccAuthService_commerceIndicator'} = 'internet';
+	}
+
+	# Set the Currency
+	if ( defined( $content->{'currency'} ) && $content->{'currency'} ne '' ) {
+		$request->{'purchaseTotals_currency'} = $content->{'currency'};
+	}
+	else {
+		$request->{'purchaseTotals_currency'} = 'USD';
+	}
+}
+
+sub request_merge {    ## no critic ( Subroutines::RequireFinalReturn )
+	my ( $self, $request, $merge ) = @_;
+	foreach my $key ( keys %{$merge} ) {
+		$request->{$key} = $merge->{$key};
+	}
+}
+
 sub submit {    ## no critic ( Subroutines::ProhibitExcessComplexity )
 	my $self = shift;
 
