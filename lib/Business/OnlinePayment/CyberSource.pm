@@ -18,7 +18,11 @@ BEGIN {
 	# determine which backend to use
 
 	use Env qw( CYBERSOURCE_BACKEND );
-	our $BACKEND = $CYBERSOURCE_BACKEND ? $CYBERSOURCE_BACKEND : 'SOAP';
+	our $BACKEND
+		= $BACKEND             ? $BACKEND
+		: $CYBERSOURCE_BACKEND ? $CYBERSOURCE_BACKEND
+		:                        'SOAP'
+		;
 
 	use Module::Load::Conditional qw( can_load requires );
 
